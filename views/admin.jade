@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  h1= title
+  p Admin
+  button(class='start').
+    Start
+  button(class='stop').
+    Stop
+  script(src="/socket.io/socket.io.js")
+  script(src="/javascripts/admin.js")
