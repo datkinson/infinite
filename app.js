@@ -66,12 +66,66 @@ app.use(function(err, req, res, next) {
   });
 });
 
+var clients = [];
+var player = {
+  position: 0,
+  maxPosition: 0
+};
+var timer;
+
+function movePlayer(amount) {
+  // console.log('player: ', player);
+  // console.log('player position: ', player.position);
+  // console.log('moving: ', amount);
+  player.position += amount;
+  // console.log('new position: ', player.position);
+  // console.log('--------------------------');
+  if (player.position > player.maxPosition) {
+    player.position = -50;
+  }
+  io.sockets.emit('playerMove', player.position);
+};
+
 io.on('connection', function (socket) {
-  console.log('connection');
+  console.log(socket.id);
+  clients[socket.id] = {socket: socket};
+
+  socket.on('disconnect', function() {
+    console.log('disconnected: ', socket.id);
+    delete clients[socket.id];
+  });
+
   io.sockets.emit('ping', 'ping');
-  socket.on('movePlayer', function (message) {
-    io.sockets.emit('playerMove', message);
-  })
+  socket.on('clientInformation', function(information) {
+    clients[socket.id].information = information;
+    var totalWidth = 0;
+    for (var key in clients) {
+      if ('information' in clients[key]) {
+        clients[key].offset = totalWidth;
+        clients[key].socket.emit('offsetUpdate', clients[key].offset);
+        totalWidth += clients[key].information.width;
+      }
+    }
+    player.maxPosition = totalWidth;
+    io.sockets.emit('playerUpdate', player);
+  });
+  socket.on('movePlayer', function (difference) {
+    movePlayer(difference);
+  });
+
+  socket.on('playerRun', function(command) {
+    timer = setInterval(function() {
+      // console.log('step');
+      movePlayer(10);
+    }, 100);
+  });
+
+  socket.on('playerStop', function(command) {
+    console.log('stand');
+    clearInterval(timer);
+  });
+
+  socket.emit('requestClientInformation', true);
 });
 
 
