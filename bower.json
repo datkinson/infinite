@@ -1,0 +1,22 @@
+{
+  "name": "infinite",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Daniel Atkinson <hourd.tasa@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/datkinson/infinite",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/libs",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.4",
+    "fingerprintjs2": "^1.2.0"
+  }
+}

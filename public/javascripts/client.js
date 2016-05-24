@@ -3,6 +3,12 @@ var information = {
   width: $(document).width(),
   height: $(document).height()
 };
+
+new Fingerprint2().get(function(result, components){
+  // console.log(result); //a hash, representing your device fingerprint
+  // console.log(components); // an array of FP components
+  information.fingerprint = result;
+});
 var viewOffset = 0;
 var playerPosition = 0;
 
@@ -41,6 +47,13 @@ socket.on('playerUpdate', function(serverPlayer) {
 socket.on('offsetUpdate', function(offset) {
   viewOffset = offset;
   renderPlayer();
+});
+
+// Send new size information when window resizes
+$( window ).resize(function() {
+  information.width = $(document).width();
+  information.height = $(document).height();
+  sendClientInformation();
 });
 
 console.log('Initialised');
